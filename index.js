@@ -5,12 +5,20 @@ const fileUpload = require('express-fileupload');
 const csvToJson = require('csvtojson');
 const nodemailer = require('nodemailer');
 
+// Setting up rate limiter : maximum of five requests per minute
+var RateLimit = require('express-rate-limit');
+var limiter = new RateLimit({
+    windowMs : 1*60*1000, //1 minute
+    max : 1
+});
+
 // app uses
 app.use(express.urlencoded({
     extended: false
 }));
 app.use(express.json());
 app.use(fileUpload());
+app.use(limiter);
 
 app.get('/index', (req, res) => {
     res.sendFile(__dirname + '/index.html');
